@@ -24,7 +24,7 @@ const fetchProductById = (id) => {
     .then(product => {
         console.log("Prodotto ricevuto:", product);
         populateForm(product);
-        console.log(product)
+        
     })
     .catch(error => console.error("Errore:", error));
 };
@@ -83,7 +83,7 @@ const handleFormSubmit = (event) => {
     .then((result) => {
         console.log(`Prodotto ${isEditing ? 'modificato' : 'creato'}:`, result);
         alert(`Prodotto ${isEditing ? 'aggiornato' : 'creato'} con successo!`);
-        window.location.href = "index.html"; // Reindirizza alla lista dei prodotti
+        window.location.href = "tables.html"; // Reindirizza alla lista dei prodotti
     })
     .catch((error) => console.error(error));
 };
