@@ -1,3 +1,8 @@
+
+// input di ricerca
+const searchInput = document.getElementById("searchInput")
+
+
 console.log("Caricamento pagina prodotto...");
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
@@ -44,48 +49,65 @@ const populateForm = (product) => {
 
 // Funzione per inviare i dati (POST per creazione, PUT per modifica)
 const handleFormSubmit = (event) => {
-    event.preventDefault(); // Evita il refresh della pagina
+  event.preventDefault(); // Evita il refresh della pagina
 
-    const productId = getProductIdFromUrl();
-    const isEditing = productId !== null;
+  const productId = getProductIdFromUrl();
+  const isEditing = productId !== null;
 
-    const formData = {
-        name: document.getElementById("inputEmail4").value,
-        description: document.getElementById("exampleFormControlTextarea1").value,
-        brand: document.getElementById("inputAddress").value,
-        imageUrl: document.getElementById("inputAddress2").value,
-        price: parseFloat(document.getElementById("inputCity").value) // Assicura che sia un numero
-    };
+  const formData = {
+      name: document.getElementById("inputEmail4").value.trim(),
+      description: document.getElementById("exampleFormControlTextarea1").value.trim(),
+      brand: document.getElementById("inputAddress").value.trim(),
+      imageUrl: document.getElementById("inputAddress2").value.trim(),
+      price: document.getElementById("inputCity").value.trim()
+  };
 
-    console.log("Dati inviati:", formData);
+  // Controlla se tutti i campi sono compilati
+  if (!formData.name || !formData.description || !formData.brand || !formData.imageUrl || !formData.price) {
+      setTimeout(() => {
+          alert("Compila tutti i campi prima di creare/modificare un prodotto!");
+      }, 2000); // Mostra l'alert dopo 2 secondi
+      return;
+  }
 
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", Bearer);
-    myHeaders.append("Content-Type", "application/json");
+  // Assicura che il prezzo sia un numero
+  formData.price = parseFloat(formData.price);
+  if (isNaN(formData.price)) {
+      setTimeout(() => {
+          alert("Inserisci un valore numerico valido per il prezzo!");
+      }, 2000);
+      return;
+  }
 
-    const endpoint = isEditing 
-        ? `https://striveschool-api.herokuapp.com/api/product/${productId}` 
-        : "https://striveschool-api.herokuapp.com/api/product/";
-    
-    const method = isEditing ? "PUT" : "POST";
+  console.log("Dati inviati:", formData);
 
-    fetch(endpoint, {
-        method: method,
-        headers: myHeaders,
-        body: JSON.stringify(formData),
-    })
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error(`Errore nella ${isEditing ? 'modifica' : 'creazione'} del prodotto`);
-        }
-        return response.json();
-    })
-    .then((result) => {
-        console.log(`Prodotto ${isEditing ? 'modificato' : 'creato'}:`, result);
-        alert(`Prodotto ${isEditing ? 'aggiornato' : 'creato'} con successo!`);
-        window.location.href = "tables.html"; // Reindirizza alla lista dei prodotti
-    })
-    .catch((error) => console.error(error));
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", Bearer);
+  myHeaders.append("Content-Type", "application/json");
+
+  const endpoint = isEditing 
+      ? `https://striveschool-api.herokuapp.com/api/product/${productId}` 
+      : "https://striveschool-api.herokuapp.com/api/product/";
+  
+  const method = isEditing ? "PUT" : "POST";
+
+  fetch(endpoint, {
+      method: method,
+      headers: myHeaders,
+      body: JSON.stringify(formData),
+  })
+  .then((response) => {
+      if (!response.ok) {
+          throw new Error(`Errore nella ${isEditing ? 'modifica' : 'creazione'} del prodotto`);
+      }
+      return response.json();
+  })
+  .then((result) => {
+      console.log(`Prodotto ${isEditing ? 'modificato' : 'creato'}:`, result);
+      alert(` Prodotto ${isEditing ? 'aggiornato' : 'creato'} con successo!`);
+      window.location.href = "/admin/table.html"; // Reindirizza alla lista dei prodotti
+  })
+  .catch((error) => console.error(error));
 };
 
 // Quando la pagina è caricata, controlla se deve modificare o creare un prodotto
@@ -98,3 +120,5 @@ document.addEventListener("DOMContentLoaded", () => {
     // Aggiunge l'evento submit al form
     document.getElementById("productForm").addEventListener("submit", handleFormSubmit);
 });
+
+

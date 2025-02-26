@@ -59,7 +59,7 @@ function renderProducts(products) {
 
         // Bottone Modifica
         const editButton = document.createElement("button");
-        editButton.className = "btn btn-info btn-sm d-flex justify-content-center align-items-center edit-button";
+        editButton.className = "btn btn-secondary btn-sm d-flex justify-content-center align-items-center edit-button";
         editButton.innerHTML = '<i class="bi bi-pencil-square"></i>';
         editButton.dataset.id = _id;
 
@@ -79,18 +79,22 @@ function renderProducts(products) {
         nameTd.textContent = name;
 
         const descriptionTd = document.createElement("td");
-        descriptionTd.textContent = description;
+        descriptionTd.textContent = description.length > 100 ? description.substring(0, 100) + "..." : description;
+        descriptionTd.className = "text-truncate";
+        descriptionTd.style.maxWidth = "200px";
+        descriptionTd.setAttribute("title", description); // Tooltip con il testo completo
+        
 
         const brandTd = document.createElement("td");
         brandTd.textContent = brand;
 
         const imageTd = document.createElement("td");
         const img = document.createElement("img");
+        
         img.src = imageUrl;
         img.alt = name;
-        img.width = 100;
+        img.className = "img-fluid w-100 rounded";
         imageTd.appendChild(img);
-
         const idTd = document.createElement("td");
         idTd.textContent = _id;
 
@@ -169,9 +173,9 @@ function filterProducts() {
     // Filtra i prodotti controllando se il termine è presente in nome, descrizione o brand
     const filtered = allProducts.filter(product =>
         product.name.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm) ||
         product.brand.toLowerCase().includes(searchTerm)
     );
+    
 
     // Aggiorna la tabella con i risultati filtrati
     renderProducts(filtered);

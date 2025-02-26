@@ -37,7 +37,7 @@ const populateForm = (product) => {
     document.getElementById("price").value = product.price;
 };
 
-// Funzione per inviare i dati aggiornati del prodotto all'API
+// Funzione per inviare i dati aggiornati del prodotto all'API  
 const updateProduct = (event) => {
     event.preventDefault(); // Evita il refresh della pagina
 
