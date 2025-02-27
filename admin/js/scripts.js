@@ -11,28 +11,42 @@ let allProductsFrontpage = [];
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
-// Funzione per caricare i dati dalla API sulla frontpage
-const fetchFrontpageData = () => {
+
+// Funzione per mescolare casualmente un array (Fisher-Yates Shuffle)
+function shuffleArray(array) {
+    let shuffledArray = [...array]; // Creiamo una copia per non modificare l'originale
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1)); // Generiamo un indice casuale
+        [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]; // Scambio
+    }
+    return shuffledArray;
+}
+
+
+
+// Funzione asincrona per caricare i dati dalla API e restituire l'array mescolato
+const fetchFrontpageData = async () => {
     const options = {
         headers: {
             Authorization: Bearer
         }
     };
 
-    fetch("https://striveschool-api.herokuapp.com/api/product/", options)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Errore nel caricamento dei dati");
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log("Dati ricevuti sulla frontpage:", data);
+    try {
+        const response = await fetch("https://striveschool-api.herokuapp.com/api/product/", options);
+        if (!response.ok) {
+            throw new Error("Errore nel caricamento dei dati");
+        }
 
-            // Salva i dati nella variabile globale
-            allProductsFrontpage = data;
-        })
-        .catch(error => console.error("Errore:", error));
+        const data = await response.json();
+        console.log("Dati ricevuti sulla frontpage:", data);
+
+        // Mescoliamo i prodotti prima di restituirli
+        return shuffleArray(data);
+    } catch (error) {
+        console.error("Errore:", error);
+        return []; // Ritorniamo un array vuoto in caso di errore
+    }
 };
 
 
@@ -127,24 +141,25 @@ function renderFrontpageProducts(products) {
     productsContainer.append(...elements);
 }
 
-// Dopo la fetch, renderizza i prodotti
-document.addEventListener("DOMContentLoaded", () => {
+// Dopo il fetch, renderizza i prodotti con attesa
+document.addEventListener("DOMContentLoaded", async () => {
     const spinner = document.getElementById("loadingSpinner");
     const productsContainer = document.getElementById("productsContainer");
 
-    // Mostra lo spinner e nasconde il contenitore dei prodotti
     spinner.style.display = "block";
     productsContainer.style.display = "none";
 
-    fetchFrontpageData(); // Recupera i dati
+    // Aspettiamo il risultato della fetch e della mescolata
+    allProductsFrontpage = await fetchFrontpageData();
 
+    // Aspettiamo 2 secondi prima di renderizzare (solo se i dati sono stati ricevuti)
     setTimeout(() => {
         renderFrontpageProducts(allProductsFrontpage);
-        
-        // Dopo il caricamento, nasconde lo spinner e mostra i prodotti
+
+        // Nasconde lo spinner e mostra i prodotti
         spinner.style.display = "none";
         productsContainer.style.display = "flex";
-    }, 2000); // Attendi la fetch prima di renderizzare
+    }, 2000);
 });
 
 /*
