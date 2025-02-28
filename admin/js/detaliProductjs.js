@@ -9,10 +9,10 @@
 
 // Variabile globale per salvare i dati del singolo prodotto
 let selectedProduct = {};
+let allProducts = [];
+let sameBrandProducts = []; // Variabile globale per salvari i prodotti dopo filtro per brand
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
-
-
 
 
 // Funzione per ottenere l'ID del prodotto dall'URL
@@ -20,36 +20,64 @@ const getProductIdFromURL = () => {
     const params = new URLSearchParams(window.location.search);
     return params.get("id");
 };
+// Funzione asincrona per caricare i dati di tutti i prodotti
+async function fetchAllProducts() {
+    try {
+        const response = await fetch("https://striveschool-api.herokuapp.com/api/product/", {
+            headers: {
+                Authorization: Bearer
+            }
+        });
 
-// Funzione per caricare i dati del singolo prodotto
-const fetchProductDetails = () => {
+        if (!response.ok) {
+            throw new Error("Errore nel caricamento dei prodotti");
+        }
+
+        const data = await response.json();
+        console.log("Dati di tutti i prodotti:", data);
+
+        // Salva i dati nella variabile globale
+        allProducts = data;
+
+        return allProducts; 
+    } catch (error) {
+        console.error("Errore nel caricamento dei prodotti:", error);
+        return []; 
+    }
+}
+
+// Funzione asincrona per caricare i dati del singolo prodotto
+async function fetchProductDetails() {
     const productId = getProductIdFromURL();
-    
+
     if (!productId) {
         console.error("ID prodotto non trovato nell'URL.");
         return;
     }
 
-    fetch(`https://striveschool-api.herokuapp.com/api/product/${productId}`, {
-        headers: {
-            Authorization: Bearer
-        }
-    })
-    .then(response => {
+    try {
+        const response = await fetch(`https://striveschool-api.herokuapp.com/api/product/${productId}`, {
+            headers: {
+                Authorization: Bearer
+            }
+        });
+
         if (!response.ok) {
             throw new Error("Errore nel caricamento del prodotto");
         }
-        return response.json();
-    })
-    .then(data => {
+
+        const data = await response.json();
         console.log("Dati del prodotto:", data);
-        
+
         // Salva i dati nella variabile globale
         selectedProduct = data;
-    })
-    .catch(error => console.error("Errore:", error));
-};
-
+        
+        return data; 
+    } catch (error) {
+        console.error("Errore:", error);
+        return null; 
+    }
+}
 
 // Seleziona il contenitore dei dettagli del prodotto
 const productDetailsContainer = document.getElementById("productDetailsContainer");
@@ -72,40 +100,79 @@ function renderProductDetails(product) {
     const colImageDiv = document.createElement("div");
     colImageDiv.className = "col-md-6";
 
-    const img = document.createElement("img");
-    img.className = "card-img-top mb-5 mb-md-0";
-    img.src = product.imageUrl;
-    img.alt = product.name;
+   // Creiamo un wrapper per contenere l'immagine ed evitare che esca dai bordi
+const imgWrapper = document.createElement("div");
+imgWrapper.style.overflow = "hidden";  // Impedisce all'immagine di uscire
+imgWrapper.style.position = "relative"; // Permette il posizionamento assoluto dell'immagine
+imgWrapper.style.width = "375px";
+imgWrapper.style.height = "600px"; // Imposta un'altezza massima fissa
+imgWrapper.className = "img-fluid "; // Imposta un'altezza massima fissa
 
-    // Assicurati che l'immagine sia caricata prima di applicare GSAP
-    img.onload = () => {
-        console.log("Immagine caricata, applico l'effetto hover con GSAP!");
+const img = document.createElement("img");
+img.className = "card-img-top mb-5 mb-md-0";
+img.src = product.imageUrl;
+img.alt = product.name;
 
-        img.addEventListener("mouseenter", () => {
-            gsap.to(img, { 
-                scale: 1.1, 
-                duration: 0.3, 
-                ease: "power1.out"
-            });
+
+// Impostiamo lo stile dell'immagine per lo zoom direzionale
+img.style.width = "100%";  
+img.style.height = "100%";  
+img.style.objectFit = "cover";  // Copre il contenitore senza distorsioni
+img.style.position = "absolute"; // Permette di muoverla all'interno del wrapper
+img.style.top = "0";
+img.style.left = "0";
+img.style.transformOrigin = "center center";
+
+img.onload = () => {
+    console.log("Immagine caricata, applico l'effetto hover con GSAP!");
+
+    img.addEventListener("mouseenter", () => {
+        gsap.to(img, { 
+            scale: 1.5, // Aumentiamo lo zoom
+            duration: 0.3, 
+            ease: "power1.out"
         });
+    });
 
-        img.addEventListener("mouseleave", () => {
-            gsap.to(img, { 
-                scale: 1, 
-                duration: 0.3, 
-                ease: "power1.out"
-            });
+    img.addEventListener("mouseleave", () => {
+        gsap.to(img, { 
+            scale: 1, 
+            x: 0, 
+            y: 0, 
+            duration: 0.3, 
+            ease: "power1.out"
         });
+    });
 
-        // Effetto di fade-in quando l'immagine appare
-        gsap.from(img, { 
-            opacity: 0, 
-            duration: 0.8, 
-            ease: "power2.out"
+    img.addEventListener("mousemove", (e) => {
+        const boundingBox = imgWrapper.getBoundingClientRect();
+        const offsetX = (e.clientX - boundingBox.left) / boundingBox.width; 
+        const offsetY = (e.clientY - boundingBox.top) / boundingBox.height;
+
+        // Calcola il movimento dell'immagine in base alla posizione del mouse
+        const moveX = (offsetX - 0.5) * 50;  // Maggiore è il valore, più si sposta
+        const moveY = (offsetY - 0.5) * 50;
+
+        gsap.to(img, {
+            x: moveX,
+            y: moveY,
+            duration: 0.1
         });
-    };
+    });
 
-    colImageDiv.appendChild(img);
+    // Effetto di fade-in quando l'immagine appare
+    gsap.from(img, { 
+        opacity: 0, 
+        duration: 0.8, 
+        ease: "power2.out"
+    });
+};
+
+// Appendiamo l'immagine dentro il wrapper
+imgWrapper.appendChild(img);
+
+// Appendiamo il wrapper al contenitore dell'immagine
+colImageDiv.appendChild(imgWrapper);
 
     // Colonna Descrizione
     const colDescriptionDiv = document.createElement("div");
@@ -156,32 +223,154 @@ function renderProductDetails(product) {
     productDetailsContainer.appendChild(rowDiv);
 }
 
+// Funzione per filrare allProducts in base al brand
+function filterProductsByBrand(brand) {
+    if (!allProducts.length) {
+        console.warn("Attenzione: Nessun prodotto caricato in allProducts.");
+        return [];
+    }
 
-// Dopo la fetch, renderizza i dettagli del prodotto
-document.addEventListener("DOMContentLoaded", () => {
+    return allProducts.filter(product => product.brand === brand);
+}
+
+function saveProductsBySameBrand() {
+    if (!selectedProduct || !selectedProduct.brand) {
+        console.warn("Brand non disponibile per il prodotto selezionato.");
+        return;
+    }
+
+    sameBrandProducts = filterProductsByBrand(selectedProduct.brand);
+    console.log(`Prodotti dello stesso brand (${selectedProduct.brand}):`, sameBrandProducts);
+}
+
+
+//funzione per rendering dei prodotti correlati al brand
+// Funzione per renderizzare i prodotti dello stesso brand
+function renderSameBrandProducts(products) {
+    const relatedProductsContainer = document.getElementById("relatedProductsContainer");
+
+    if (!relatedProductsContainer) {
+        console.error("Elemento con ID 'relatedProductsContainer' non trovato nel DOM.");
+        return;
+    }
+
+    // Svuota il contenitore prima di renderizzare i nuovi prodotti
+    relatedProductsContainer.innerHTML = "";
+
+    // Creazione del titolo
+    const title = document.createElement("h2");
+    title.className = "fw-bolder mb-4";
+    title.textContent = "Related products";
+    relatedProductsContainer.appendChild(title);
+
+    // Creazione della riga di prodotti
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center";
+
+    const elements = products.map(({ _id, name, imageUrl, price }) => {
+        // Creazione della colonna Bootstrap
+        const colDiv = document.createElement("div");
+        colDiv.className = "col mb-5";
+
+        // Creazione della card
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "card h-100";
+        
+
+        // Immagine del prodotto
+        const img = document.createElement("img");
+        img.className = "card-img-top";
+        img.src = imageUrl || "https://dummyimage.com/450x300/dee2e6/6c757d.jpg"; // Placeholder se manca l'immagine
+        img.alt = name;
+
+        // Applica un'animazione quando l'immagine viene aggiunta con GSAP
+        img.onload = () => {
+            gsap.from(img, {
+                opacity: 0,
+                scale: 0.8,
+                duration: 1,
+                ease: "power2.out"
+            });
+        };
+
+        // Corpo della card
+        const cardBody = document.createElement("div");
+        cardBody.className = "card-body p-4";
+
+        // Testo centrato
+        const textCenter = document.createElement("div");
+        textCenter.className = "text-center";
+
+        // Nome del prodotto
+        const title = document.createElement("h5");
+        title.className = "fw-bolder";
+        title.textContent = name;
+
+        // Prezzo del prodotto
+        const priceText = document.createElement("p");
+        priceText.textContent = `${price} €`;
+
+        // Aggiunta dei dettagli alla card
+        textCenter.append(title, priceText);
+        cardBody.appendChild(textCenter);
+
+        // Footer della card con il bottone di azione
+        const cardFooter = document.createElement("div");
+        cardFooter.className = "card-footer p-4 pt-0 border-top-0 bg-transparent";
+
+        const btnContainer = document.createElement("div");
+        btnContainer.className = "text-center";
+
+        const viewButton = document.createElement("a");
+        viewButton.className = "btn btn-outline-dark mt-auto";
+        viewButton.href = `detailProduct.html?id=${_id}`; // Link alla pagina dettagli del prodotto
+        viewButton.textContent = "View options";
+
+        btnContainer.appendChild(viewButton);
+        cardFooter.appendChild(btnContainer);
+
+        // Assemblaggio della card
+        cardDiv.append(img, cardBody, cardFooter);
+        colDiv.appendChild(cardDiv);
+
+        return colDiv;
+    });
+
+    // Aggiunge tutte le card alla riga principale
+    rowDiv.append(...elements);
+    relatedProductsContainer.appendChild(rowDiv);
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", async () => {
     const spinner = document.getElementById("loadingSpinner");
     const productContainer = document.getElementById("productDetailsContainer");
-
-
-
 
     // Mostra lo spinner e nasconde i dettagli del prodotto
     spinner.style.display = "block";
     productContainer.style.display = "none";
 
-    fetchProductDetails(); // Recupera i dati
+    await fetchProductDetails(); // ✅ Recupera i dati del singolo prodotto
+    await fetchAllProducts(); // ✅ Recuperiamo tutti i prodotti 
+
+    console.log("Dati di allProducts dopo il caricamento:", allProducts); // ✅ Ora non sarà vuoto
+
+    // Filtra i prodotti in base al brand del prodotto selezionato
+    if (selectedProduct && selectedProduct.brand) {
+        const prodottiStessoBrand = filterProductsByBrand(selectedProduct.brand);
+        console.log(`Prodotti dello stesso brand (${selectedProduct.brand}):`, prodottiStessoBrand);
+    } else {
+        console.warn("Brand non trovato nel prodotto selezionato.");
+    }
 
     setTimeout(() => {
         renderProductDetails(selectedProduct);
-
+        saveProductsBySameBrand();
+        renderSameBrandProducts(sameBrandProducts);
         // Dopo il caricamento, nasconde lo spinner e mostra i dettagli
         spinner.style.display = "none";
         productContainer.style.display = "flex";
-    }, 2000); // Aspetta la fetch prima di mostrare il contenuto
+    }, 2000);
 });
-
-// Esegui fetch quando il DOM è completamente caricato
-document.addEventListener("DOMContentLoaded", fetchProductDetails);
-
-
-

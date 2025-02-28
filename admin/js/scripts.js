@@ -6,11 +6,14 @@
 // This file is intentionally blank
 // Use this file to add JavaScript to your project
 
+// Seleziona il contenitore della griglia dei prodotti sulla frontpage
+const productsContainer = document.getElementById("productsContainer");
+
 // Variabile globale per salvare tutti i prodotti sulla frontpage
 let allProductsFrontpage = [];
 
+// Bearer key
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
-
 
 // Funzione per mescolare casualmente un array (Fisher-Yates Shuffle)
 function shuffleArray(array) {
@@ -22,10 +25,8 @@ function shuffleArray(array) {
     return shuffledArray;
 }
 
-
-
 // Funzione asincrona per caricare i dati dalla API e restituire l'array mescolato
-const fetchFrontpageData = async () => {
+async function fetchFrontpageData() {
     const options = {
         headers: {
             Authorization: Bearer
@@ -39,7 +40,8 @@ const fetchFrontpageData = async () => {
         }
 
         const data = await response.json();
-        console.log("Dati ricevuti sulla frontpage:", data);
+
+        console.log("Dati ricevuti sulla frontPage:", data);
 
         // Mescoliamo i prodotti prima di restituirli
         return shuffleArray(data);
@@ -49,13 +51,8 @@ const fetchFrontpageData = async () => {
     }
 };
 
-
-
-// Seleziona il contenitore della griglia dei prodotti sulla frontpage
-const productsContainer = document.getElementById("productsContainer");
-
 // Funzione per renderizzare i prodotti sulla frontpage
-function renderFrontpageProducts(products) {
+function renderFrontpageProducts(arlecchino) {
     if (!productsContainer) {
         console.error("Elemento con ID 'productsContainer' non trovato nel DOM.");
         return;
@@ -64,7 +61,7 @@ function renderFrontpageProducts(products) {
     // Svuota il contenitore prima di renderizzare i nuovi prodotti
     productsContainer.innerHTML = "";
 
-    const elements = products.map(({ _id, name, description, brand, imageUrl, price }) => {
+    const elements = arlecchino.map(({ _id, name, description, brand, imageUrl, price }) => {
         // Creazione della colonna Bootstrap
         const colDiv = document.createElement("div");
         colDiv.className = "col mb-5";
@@ -141,7 +138,7 @@ function renderFrontpageProducts(products) {
     productsContainer.append(...elements);
 }
 
-// Dopo il fetch, renderizza i prodotti con attesa
+// in attesa che tutto il DOM si carici impostiamo attesa per renderizzare i prodotti dopo la fetch
 document.addEventListener("DOMContentLoaded", async () => {
     const spinner = document.getElementById("loadingSpinner");
     const productsContainer = document.getElementById("productsContainer");
