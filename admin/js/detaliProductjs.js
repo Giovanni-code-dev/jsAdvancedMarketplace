@@ -5,12 +5,16 @@
 */
 // This file is intentionally blank
 // Use this file to add JavaScript to your project
+// Variabile globale per cartCount
+const cartCount = document.getElementById("cartCount");
+
 
 
 // Variabile globale per salvare i dati del singolo prodotto
 let selectedProduct = {};
 let allProducts = [];
 let sameBrandProducts = []; // Variabile globale per salvari i prodotti dopo filtro per brand
+let cartItemsArray = [];
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
@@ -104,8 +108,8 @@ function renderProductDetails(product) {
 const imgWrapper = document.createElement("div");
 imgWrapper.style.overflow = "hidden";  // Impedisce all'immagine di uscire
 imgWrapper.style.position = "relative"; // Permette il posizionamento assoluto dell'immagine
-imgWrapper.style.width = "375px";
-imgWrapper.style.height = "600px"; // Imposta un'altezza massima fissa
+imgWrapper.style.width = "300px";
+imgWrapper.style.height = "475px"; // Imposta un'altezza massima fissa
 imgWrapper.className = "img-fluid "; // Imposta un'altezza massima fissa
 
 const img = document.createElement("img");
@@ -221,6 +225,7 @@ colImageDiv.appendChild(imgWrapper);
     // Assemblaggio finale
     rowDiv.append(colImageDiv, colDescriptionDiv);
     productDetailsContainer.appendChild(rowDiv);
+    
 }
 
 // Funzione per filrare allProducts in base al brand
@@ -246,7 +251,8 @@ function saveProductsBySameBrand() {
 
 //funzione per rendering dei prodotti correlati al brand
 // Funzione per renderizzare i prodotti dello stesso brand
-function renderSameBrandProducts(products) {
+function renderSameBrandProducts(products)
+{ 
     const relatedProductsContainer = document.getElementById("relatedProductsContainer");
 
     if (!relatedProductsContainer) {
@@ -289,9 +295,13 @@ function renderSameBrandProducts(products) {
                 opacity: 0,
                 scale: 0.8,
                 duration: 1,
-                ease: "power2.out"
+                ease: "power2.out",
+
             });
         };
+
+
+;
 
         // Corpo della card
         const cardBody = document.createElement("div");
@@ -344,6 +354,7 @@ function renderSameBrandProducts(products) {
 
 
 
+
 document.addEventListener("DOMContentLoaded", async () => {
     const spinner = document.getElementById("loadingSpinner");
     const productContainer = document.getElementById("productDetailsContainer");
@@ -372,5 +383,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Dopo il caricamento, nasconde lo spinner e mostra i dettagli
         spinner.style.display = "none";
         productContainer.style.display = "flex";
-    }, 2000);
+    }, 0.500);
 });

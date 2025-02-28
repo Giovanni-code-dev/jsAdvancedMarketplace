@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Nasconde lo spinner e mostra i prodotti
         spinner.style.display = "none";
         productsContainer.style.display = "flex";
-    }, 2000);
+    }, 0.500);
 });
 
 /*
