@@ -41,7 +41,7 @@ async function fetchFrontpageData() {
 
         const data = await response.json();
 
-        console.log("Dati ricevuti sulla frontPage:", data);
+       // console.log("Dati ricevuti sulla frontPage:", data);
 
         // Mescoliamo i prodotti prima di restituirli
         return shuffleArray(data);
@@ -61,7 +61,7 @@ function renderFrontpageProducts(arlecchino) {
     // Svuota il contenitore prima di renderizzare i nuovi prodotti
     productsContainer.innerHTML = "";
 
-    const elements = arlecchino.map(({ _id, name, description, brand, imageUrl, price }) => {
+    const elements = arlecchino.map(({ _id, name, brand, imageUrl, price }) => {
         // Creazione della colonna Bootstrap
         const colDiv = document.createElement("div");
         colDiv.className = "col mb-5";
@@ -76,7 +76,7 @@ function renderFrontpageProducts(arlecchino) {
         img.src = imageUrl;
         img.alt = name;
         
-        // Applica un'animazione quando l'immagine viene aggiunta con gasp 
+        // Applica un'animazione quando l'immagine viene aggiunta con gsap
         img.onload = () => {
             gsap.from(img, {
                 opacity: 0,
@@ -156,10 +156,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Nasconde lo spinner e mostra i prodotti
         spinner.style.display = "none";
         productsContainer.style.display = "flex";
-    }, 0.500);
+    }, 500);
 });
 
-/*
-// Esegui fetch quando il DOM è completamente caricato
-document.addEventListener("DOMContentLoaded", fetchFrontpageData);
-*/

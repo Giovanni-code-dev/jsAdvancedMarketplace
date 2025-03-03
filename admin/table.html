@@ -21,6 +21,7 @@
 
     <!-- Custom styles for this template -->
     <link href="/admin/css/table.css" rel="stylesheet">
+    <link href="/admin/css/custom.css" rel="stylesheet">
 
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
@@ -270,27 +271,23 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                    <thead>
+                                <table class="table table-hover table-bordered" width="100%" cellspacing="0">
+                                    <thead id="tableHead">
                                         <tr>
-                                            <th>Action</th>
-                                            <th>Name</th>
-                                            <th>Descrition</th>
-                                            <th>Brand</th>
+                                            <th data-sort="name">Name</th>
+                                            <th data-sort="brand">Brand</th>
                                             <th>ImageUrl</th>
-                                            <th>UserId</th>
-                                            <th>Price</th>
+                                            <th data-sort="price">Price</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>Action</th>
                                             <th>Name</th>
-                                            <th>Descrition</th>
                                             <th>Brand</th>
                                             <th>ImageUrl</th>
-                                            <th>UserId</th>
                                             <th>Price</th>
+                                            <th>Action</th>
                                         </tr>
                                     </tfoot>
                                     <tbody id="output">

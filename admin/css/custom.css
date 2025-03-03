@@ -1,0 +1,27 @@
+table th {
+    position: relative;
+    padding-right: 40px!important;
+    
+  }
+  
+  table th[data-sort]::after,
+  table th[data-sort]::before {
+    content: "\25BC"; /* freccia in giù: ▼ */
+    font-family: "Font Awesome 5 Free"; 
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+  }
+  
+  table th[data-sort]::after {
+    content: "\25B2"; /* freccia in su: ▲ */
+    right: 15px;
+  }
+  
+   body {
+    font-family: 'Share Tech Mono', monospace !important;
+    background-color: #093b29;
+  }

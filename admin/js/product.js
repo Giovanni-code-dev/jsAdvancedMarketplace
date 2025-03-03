@@ -3,7 +3,7 @@
 const searchInput = document.getElementById("searchInput")
 
 
-console.log("Caricamento pagina prodotto...");
+//console.log("Caricamento pagina prodotto...");
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
@@ -27,7 +27,7 @@ const fetchProductById = (id) => {
         return response.json();
     })
     .then(product => {
-        console.log("Prodotto ricevuto:", product);
+       // console.log("Prodotto ricevuto:", product);
         populateForm(product);
         
     })
@@ -65,10 +65,12 @@ const handleFormSubmit = (event) => {
   // Controlla se tutti i campi sono compilati
   if (!formData.name || !formData.description || !formData.brand || !formData.imageUrl || !formData.price) {
       setTimeout(() => {
+        
           alert("Compila tutti i campi prima di creare/modificare un prodotto!");
-      }, 2000); // Mostra l'alert dopo 2 secondi
+      }, 1000); // Mostra l'alert dopo 2 secondi
       return;
   }
+  
 
   // Assicura che il prezzo sia un numero
   formData.price = parseFloat(formData.price);
@@ -79,12 +81,13 @@ const handleFormSubmit = (event) => {
       return;
   }
 
-  console.log("Dati inviati:", formData);
+  //console.log("Dati inviati:", formData);
 
   const myHeaders = new Headers();
   myHeaders.append("Authorization", Bearer);
   myHeaders.append("Content-Type", "application/json");
 
+  //operarotre ternario se is editing è vero allora la stranga sarà la prima condizione ? se è vero altrimenti la condizione sarà :
   const endpoint = isEditing 
       ? `https://striveschool-api.herokuapp.com/api/product/${productId}` 
       : "https://striveschool-api.herokuapp.com/api/product/";
@@ -103,7 +106,7 @@ const handleFormSubmit = (event) => {
       return response.json();
   })
   .then((result) => {
-      console.log(`Prodotto ${isEditing ? 'modificato' : 'creato'}:`, result);
+     // console.log(`Prodotto ${isEditing ? 'modificato' : 'creato'}:`, result);
       alert(` Prodotto ${isEditing ? 'aggiornato' : 'creato'} con successo!`);
       window.location.href = "/admin/table.html"; // Reindirizza alla lista dei prodotti
   })

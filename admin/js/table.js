@@ -1,10 +1,10 @@
 // Variabile globale per salvare tutti i prodotti
 let allProducts = [];
-
-// input di ricerca
+let order = 0
+let orderBy = ""
+// selezioninamo input di ricerca con id= searchInput
 const searchInput = document.getElementById("searchInput");
 
-console.log("ciao");
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
@@ -27,28 +27,87 @@ const fetchData = () => {
             return response.json();
         })
         .then(data => {
-            console.log("Dati ricevuti:", data);
+            //console.log("Dati ricevuti:", data);
 
             // Salva i dati nella variabile globale
             allProducts = data;
+            //proviamo ad ordinare data con .sort (2 parametri impliciti per determinare come devono intergire).trim
+            let reorderData = data.sort((a,b)=> a.name.trim().localeCompare(b.name.trim()))
 
+            document.querySelectorAll("th").forEach(th => {
+                th.addEventListener("click",()=> {
+                    const sorKey = th.dataset.sort;
+                   //console.log(sorKey)
+                    if (sorKey && sorKey === "name") {
+                        if (order === 0) {
+                            reorderData = data.sort((b,a)=> a.name.trim().localeCompare(b.name.trim()))
+                            order ++
+                        } else {
+                            reorderData = data.sort((a,b)=> a.name.trim().localeCompare(b.name.trim()))
+                            order = 0
+                        }
+                    }
+
+                    if (sorKey && sorKey === "brand") {
+                        if (order === 0) {
+                            reorderData = data.sort((b,a)=> a.brand.trim().localeCompare(b.brand.trim()))
+                            order ++
+                        } else {
+                            reorderData = data.sort((a,b)=> a.brand.trim().localeCompare(b.brand.trim()))
+                            order = 0
+                        }
+                    }
+
+                    if (sorKey && sorKey === "price") {
+                        if (order === 0) {
+                            reorderData = data.sort((b,a)=> a.price - b.price)
+                            order ++
+                        } else {
+                            reorderData = data.sort((a,b)=> a.price - b.price)
+                            order = 0
+                        }
+                    }
+                    renderProducts(reorderData, outputElement);
+                })
+            })
+/*
+            // Selezioniamo l’elemento HTML con id="order_name"
+            const orderName = document.getElementById("order_name");
+
+            // Aggiungiamo un event listener sul click
+            orderName.addEventListener("click", function () {
+                if (order === 0) {
+                    reorderData = data.sort((b,a)=> a.name.trim().localeCompare(b.name.trim()))
+                    order ++
+                } else {
+                    reorderData = data.sort((a,b)=> a.name.trim().localeCompare(b.name.trim()))
+                    order = 0
+                }
+                   
+                renderProducts(reorderData, outputElement);
+            });
+             */
+
+            //let reorderData = data.sort((a, b) => a.price - b.price)
             // Renderizza i prodotti nella tabella
-            renderProducts(allProducts);
+            renderProducts(reorderData, outputElement);
         })
         .catch(error => console.error("Errore:", error));
 };
 
 // Funzione per renderizzare i prodotti nella tabella
-function renderProducts(products) {
+function renderProducts(products, outputElement) {
     if (!outputElement) {
         console.error("Elemento con ID 'output' non trovato nel DOM.");
         return;
+
+
     }
 
     // Svuota la tabella prima di renderizzare i nuovi dati
     outputElement.innerHTML = "";
 
-    const elements = products.map(({ _id, name, description, brand, imageUrl, price }) => {
+    const elements = products.map(({ _id, name, brand, imageUrl, price }) => {
         const tr = document.createElement("tr");
         tr.dataset.id = _id;
 
@@ -78,30 +137,24 @@ function renderProducts(products) {
         const nameTd = document.createElement("td");
         nameTd.textContent = name;
 
-        const descriptionTd = document.createElement("td");
-        descriptionTd.textContent = description.length > 100 ? description.substring(0, 100) + "..." : description;
-        descriptionTd.className = "text-truncate";
-        descriptionTd.style.maxWidth = "200px";
-        descriptionTd.setAttribute("title", description); // Tooltip con il testo completo
-        
-
         const brandTd = document.createElement("td");
         brandTd.textContent = brand;
 
         const imageTd = document.createElement("td");
         const img = document.createElement("img");
-        
+
         img.src = imageUrl;
         img.alt = name;
-        img.className = "img-fluid w-100 rounded";
+        img.className = "img-fluid  rounded";
+        img.style.width= "100px"
         imageTd.appendChild(img);
-        const idTd = document.createElement("td");
-        idTd.textContent = _id;
+
+
 
         const priceTd = document.createElement("td");
         priceTd.textContent = `${price} €`;
 
-        tr.append(actionTd, nameTd, descriptionTd, brandTd, imageTd, idTd, priceTd);
+        tr.append(nameTd, brandTd, imageTd, priceTd, actionTd);
 
         return tr;
     });
@@ -124,19 +177,19 @@ const deleteProduct = (id) => {
             Authorization: Bearer
         }
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Errore nell'eliminazione del prodotto");
-        }
-        console.log(`Prodotto con ID ${id} eliminato`);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Errore nell'eliminazione del prodotto");
+            }
+            //console.log(`Prodotto con ID ${id} eliminato`);
 
-        // Aggiorna la variabile globale rimuovendo il prodotto eliminato
-        allProducts = allProducts.filter(product => product._id !== id);
+            // Aggiorna la variabile globale rimuovendo il prodotto eliminato
+            allProducts = allProducts.filter(product => product._id !== id);
 
-        // Ricarica la lista aggiornata
-        renderProducts(allProducts);
-    })
-    .catch(error => console.error("Errore:", error));
+            // Ricarica la lista aggiornata
+            renderProducts(allProducts);
+        })
+        .catch(error => console.error("Errore:", error));
 };
 
 // Funzione per aggiungere event listener ai bottoni delete
@@ -166,7 +219,7 @@ function filterProducts() {
 
     // Se l'utente ha digitato meno di 3 caratteri, mostra tutti i prodotti
     if (searchTerm.length < 3) {
-        renderProducts(allProducts);
+        renderProducts(allProducts,outputElement);
         return;
     }
 
@@ -175,10 +228,10 @@ function filterProducts() {
         product.name.toLowerCase().includes(searchTerm) ||
         product.brand.toLowerCase().includes(searchTerm)
     );
-    
+
 
     // Aggiorna la tabella con i risultati filtrati
-    renderProducts(filtered);
+    renderProducts(filtered,outputElement);
 }
 
 // Event Listener per filtrare in tempo reale
@@ -186,3 +239,6 @@ searchInput.addEventListener("input", filterProducts);
 
 // Esegui fetch quando il DOM è completamente caricato
 document.addEventListener("DOMContentLoaded", fetchData);
+
+
+

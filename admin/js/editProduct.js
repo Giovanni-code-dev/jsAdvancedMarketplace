@@ -1,4 +1,4 @@
-console.log("Caricamento pagina di modifica...");
+
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
@@ -22,7 +22,7 @@ const fetchProductById = (id) => {
         return response.json();
     })
     .then(product => {
-        console.log("Prodotto ricevuto:", product);
+        //console.log("Prodotto ricevuto:", product);
         populateForm(product);
     })
     .catch(error => console.error("Errore:", error));
@@ -71,7 +71,7 @@ const updateProduct = (event) => {
         return response.json();
     })
     .then(updatedData => {
-        console.log("Prodotto aggiornato:", updatedData);
+        //console.log("Prodotto aggiornato:", updatedData);
         alert("Prodotto aggiornato con successo!"); // Mostra un messaggio di conferma
         window.location.href = "tables.html"; // Reindirizza alla lista dei prodotti dopo la modifica
     })
