@@ -36,7 +36,7 @@
                         </li>
                     </ul>
                     <div class="d-flex justify-content-center gap-2">
-                        <button id="cartButton" class="btn btn-outline-dark" type="submit">
+                        <button id="cartButtonShow" class="btn btn-outline-dark" type="submit">
                             <i class="bi-cart-fill me-1"></i>
                             Cart
                             <span id="cartCount" class="badge bg-dark text-white ms-1 rounded-pill">0</span>
@@ -52,6 +52,24 @@
         </nav>
   <!-- Il nostro modale -->
 
+  <!-- Modal -->
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="cartModalLabel">Carrello</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cartItemsContainer"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary">Checkout</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+        </div>
+      </div>
+    </div>
+  </div>
   
  
 

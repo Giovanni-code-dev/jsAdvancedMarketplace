@@ -3,11 +3,15 @@
 * Copyright 2013-2023 Start Bootstrap
 * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
 */
-// This file is intentionally blank
-// Use this file to add JavaScript to your project
+// Questo file è intenzionalmente vuoto
+// Utilizza questo file per aggiungere JavaScript al tuo progetto
 
 // Seleziona il contenitore della griglia dei prodotti sulla frontpage
 const productsContainer = document.getElementById("productsContainer");
+
+const cartCount = document.getElementById("cartCount");
+
+let cartItemsArray = []; // Array del carrello
 
 // Variabile globale per salvare tutti i prodotti sulla frontpage
 let allProductsFrontpage = [];
@@ -15,7 +19,10 @@ let allProductsFrontpage = [];
 // Bearer key
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
-// Funzione per mescolare casualmente un array (Fisher-Yates Shuffle)
+/*********************************************
+ * FUNZIONE: shuffleArray
+ * SCOPO: MESCOLA CASUALMENTE GLI ELEMENTI DI UN ARRAY
+ *********************************************/
 function shuffleArray(array) {
     let shuffledArray = [...array]; // Creiamo una copia per non modificare l'originale
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -25,7 +32,11 @@ function shuffleArray(array) {
     return shuffledArray;
 }
 
-// Funzione asincrona per caricare i dati dalla API e restituire l'array mescolato
+/*********************************************
+ * FUNZIONE: fetchFrontpageData
+ * SCOPO: EFFETTUA UNA RICHIESTA ALL’API E RESTITUISCE
+ *        I PRODOTTI MESCOLATI
+ *********************************************/
 async function fetchFrontpageData() {
     const options = {
         headers: {
@@ -41,17 +52,18 @@ async function fetchFrontpageData() {
 
         const data = await response.json();
 
-       // console.log("Dati ricevuti sulla frontPage:", data);
-
         // Mescoliamo i prodotti prima di restituirli
         return shuffleArray(data);
     } catch (error) {
         console.error("Errore:", error);
         return []; // Ritorniamo un array vuoto in caso di errore
     }
-};
+}
 
-// Funzione per renderizzare i prodotti sulla frontpage
+/*********************************************
+ * FUNZIONE: renderFrontpageProducts
+ * SCOPO: RENDERIZZA SULLA PAGINA L’ELENCO DEI PRODOTTI
+ *********************************************/
 function renderFrontpageProducts(arlecchino) {
     if (!productsContainer) {
         console.error("Elemento con ID 'productsContainer' non trovato nel DOM.");
@@ -139,24 +151,39 @@ function renderFrontpageProducts(arlecchino) {
     productsContainer.append(...elements);
 }
 
-// in attesa che tutto il DOM si carici impostiamo attesa per renderizzare i prodotti dopo la fetch
+/*********************************************
+ * EVENT LISTENER: DOMContentLoaded
+ * SCOPO: ESEGUE IL CODICE DOPO IL CARICAMENTO DEL DOM
+ *********************************************/
 document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Carichi i dati del carrello da localStorage
+    const savedCart = localStorage.getItem("cartItems");
+    if (savedCart) {
+      cartItemsArray = JSON.parse(savedCart);
+      updateCartCount(); 
+    }
+
+    // 2. Mostri spinner e nascondi container
     const spinner = document.getElementById("loadingSpinner");
     const productsContainer = document.getElementById("productsContainer");
-
     spinner.style.display = "block";
     productsContainer.style.display = "none";
 
-    // Aspettiamo il risultato della fetch e della mescolata
+    // 3. Fai la fetch e salvi i risultati
     allProductsFrontpage = await fetchFrontpageData();
 
-    // Aspettiamo 2 secondi prima di renderizzare (solo se i dati sono stati ricevuti)
+    // 4. Renderizzi dopo un piccolo timeout
     setTimeout(() => {
-        renderFrontpageProducts(allProductsFrontpage);
-
-        // Nasconde lo spinner e mostra i prodotti
-        spinner.style.display = "none";
-        productsContainer.style.display = "flex";
+      renderFrontpageProducts(allProductsFrontpage);
+      spinner.style.display = "none";
+      productsContainer.style.display = "flex";
     }, 500);
 });
 
+/*********************************************
+ * FUNZIONE: updateCartCount
+ * SCOPO: AGGIORNA IL CONTATORE DEGLI ARTICOLI NEL CARRELLO
+ *********************************************/
+function updateCartCount() {
+    cartCount.textContent = cartItemsArray.length;
+}

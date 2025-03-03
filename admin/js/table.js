@@ -1,17 +1,21 @@
 // Variabile globale per salvare tutti i prodotti
 let allProducts = [];
-let order = 0
-let orderBy = ""
-// selezioninamo input di ricerca con id= searchInput
-const searchInput = document.getElementById("searchInput");
+let order = 0;
+let orderBy = "";
 
+// Selezioniamo l’input di ricerca con id="searchInput"
+const searchInput = document.getElementById("searchInput");
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
 // Seleziona il tbody della tabella
 const outputElement = document.getElementById("output");
 
-// Funzione per caricare i dati dalla API
+/*********************************************
+ * FUNZIONE: fetchData
+ * SCOPO: CARICARE I DATI DALL'API E ORDINARLI,
+ *        SUCCESSIVAMENTE RENDERIZZARLI IN TABELLA
+ *********************************************/
 const fetchData = () => {
     const options = {
         headers: {
@@ -31,77 +35,61 @@ const fetchData = () => {
 
             // Salva i dati nella variabile globale
             allProducts = data;
-            //proviamo ad ordinare data con .sort (2 parametri impliciti per determinare come devono intergire).trim
-            let reorderData = data.sort((a,b)=> a.name.trim().localeCompare(b.name.trim()))
 
+            // Proviamo a ordinare i dati in base al nome
+            let reorderData = data.sort((a, b) => a.name.trim().localeCompare(b.name.trim()));
+
+            // Gestione ordinamento sulle colonne (cliccando sull’intestazione)
             document.querySelectorAll("th").forEach(th => {
-                th.addEventListener("click",()=> {
+                th.addEventListener("click", () => {
                     const sorKey = th.dataset.sort;
-                   //console.log(sorKey)
                     if (sorKey && sorKey === "name") {
                         if (order === 0) {
-                            reorderData = data.sort((b,a)=> a.name.trim().localeCompare(b.name.trim()))
-                            order ++
+                            reorderData = data.sort((b, a) => a.name.trim().localeCompare(b.name.trim()));
+                            order++;
                         } else {
-                            reorderData = data.sort((a,b)=> a.name.trim().localeCompare(b.name.trim()))
-                            order = 0
+                            reorderData = data.sort((a, b) => a.name.trim().localeCompare(b.name.trim()));
+                            order = 0;
                         }
                     }
 
                     if (sorKey && sorKey === "brand") {
                         if (order === 0) {
-                            reorderData = data.sort((b,a)=> a.brand.trim().localeCompare(b.brand.trim()))
-                            order ++
+                            reorderData = data.sort((b, a) => a.brand.trim().localeCompare(b.brand.trim()));
+                            order++;
                         } else {
-                            reorderData = data.sort((a,b)=> a.brand.trim().localeCompare(b.brand.trim()))
-                            order = 0
+                            reorderData = data.sort((a, b) => a.brand.trim().localeCompare(b.brand.trim()));
+                            order = 0;
                         }
                     }
 
                     if (sorKey && sorKey === "price") {
                         if (order === 0) {
-                            reorderData = data.sort((b,a)=> a.price - b.price)
-                            order ++
+                            reorderData = data.sort((b, a) => a.price - b.price);
+                            order++;
                         } else {
-                            reorderData = data.sort((a,b)=> a.price - b.price)
-                            order = 0
+                            reorderData = data.sort((a, b) => a.price - b.price);
+                            order = 0;
                         }
                     }
                     renderProducts(reorderData, outputElement);
-                })
-            })
-/*
-            // Selezioniamo l’elemento HTML con id="order_name"
-            const orderName = document.getElementById("order_name");
-
-            // Aggiungiamo un event listener sul click
-            orderName.addEventListener("click", function () {
-                if (order === 0) {
-                    reorderData = data.sort((b,a)=> a.name.trim().localeCompare(b.name.trim()))
-                    order ++
-                } else {
-                    reorderData = data.sort((a,b)=> a.name.trim().localeCompare(b.name.trim()))
-                    order = 0
-                }
-                   
-                renderProducts(reorderData, outputElement);
+                });
             });
-             */
 
-            //let reorderData = data.sort((a, b) => a.price - b.price)
-            // Renderizza i prodotti nella tabella
+            // Renderizza i prodotti nella tabella iniziale
             renderProducts(reorderData, outputElement);
         })
         .catch(error => console.error("Errore:", error));
 };
 
-// Funzione per renderizzare i prodotti nella tabella
+/*********************************************
+ * FUNZIONE: renderProducts
+ * SCOPO: RENDERIZZARE I PRODOTTI NELLA TABELLA
+ *********************************************/
 function renderProducts(products, outputElement) {
     if (!outputElement) {
         console.error("Elemento con ID 'output' non trovato nel DOM.");
         return;
-
-
     }
 
     // Svuota la tabella prima di renderizzare i nuovi dati
@@ -146,16 +134,13 @@ function renderProducts(products, outputElement) {
         img.src = imageUrl;
         img.alt = name;
         img.className = "img-fluid  rounded";
-        img.style.width= "100px"
+        img.style.width = "100px";
         imageTd.appendChild(img);
-
-
 
         const priceTd = document.createElement("td");
         priceTd.textContent = `${price} €`;
 
         tr.append(nameTd, brandTd, imageTd, priceTd, actionTd);
-
         return tr;
     });
 
@@ -167,7 +152,10 @@ function renderProducts(products, outputElement) {
     attachEditEventListeners();
 }
 
-// Funzione per eliminare un prodotto con una richiesta DELETE
+/*********************************************
+ * FUNZIONE: deleteProduct
+ * SCOPO: ELIMINARE UN PRODOTTO CON UNA RICHIESTA DELETE
+ *********************************************/
 const deleteProduct = (id) => {
     if (!confirm("Sei sicuro di voler eliminare questo prodotto?")) return;
 
@@ -187,12 +175,15 @@ const deleteProduct = (id) => {
             allProducts = allProducts.filter(product => product._id !== id);
 
             // Ricarica la lista aggiornata
-            renderProducts(allProducts);
+            renderProducts(allProducts, outputElement);
         })
         .catch(error => console.error("Errore:", error));
 };
 
-// Funzione per aggiungere event listener ai bottoni delete
+/*********************************************
+ * FUNZIONE: attachDeleteEventListeners
+ * SCOPO: AGGIUNGERE EVENT LISTENER AI BOTTONI DI ELIMINAZIONE
+ *********************************************/
 const attachDeleteEventListeners = () => {
     document.querySelectorAll(".delete-button").forEach(button => {
         button.addEventListener("click", (event) => {
@@ -202,7 +193,10 @@ const attachDeleteEventListeners = () => {
     });
 };
 
-// Funzione per aggiungere event listener ai bottoni edit
+/*********************************************
+ * FUNZIONE: attachEditEventListeners
+ * SCOPO: AGGIUNGERE EVENT LISTENER AI BOTTONI DI MODIFICA
+ *********************************************/
 const attachEditEventListeners = () => {
     document.querySelectorAll(".edit-button").forEach(button => {
         button.addEventListener("click", (event) => {
@@ -212,33 +206,34 @@ const attachEditEventListeners = () => {
     });
 };
 
-
-// Funzione per filtrare i prodotti in base al valore di searchInput
+/*********************************************
+ * FUNZIONE: filterProducts
+ * SCOPO: FILTRARE I PRODOTTI IN BASE ALL’INPUT DI RICERCA
+ *********************************************/
 function filterProducts() {
     const searchTerm = searchInput.value.toLowerCase();
 
     // Se l'utente ha digitato meno di 3 caratteri, mostra tutti i prodotti
     if (searchTerm.length < 3) {
-        renderProducts(allProducts,outputElement);
+        renderProducts(allProducts, outputElement);
         return;
     }
 
-    // Filtra i prodotti controllando se il termine è presente in nome, descrizione o brand
+    // Filtra i prodotti controllando se il termine è presente in nome o brand
     const filtered = allProducts.filter(product =>
         product.name.toLowerCase().includes(searchTerm) ||
         product.brand.toLowerCase().includes(searchTerm)
     );
 
-
     // Aggiorna la tabella con i risultati filtrati
-    renderProducts(filtered,outputElement);
+    renderProducts(filtered, outputElement);
 }
 
 // Event Listener per filtrare in tempo reale
 searchInput.addEventListener("input", filterProducts);
 
-// Esegui fetch quando il DOM è completamente caricato
+/*********************************************
+ * EVENT LISTENER: DOMContentLoaded
+ * SCOPO: ESEGUIRE fetchData AL CARICAMENTO DEL DOM
+ *********************************************/
 document.addEventListener("DOMContentLoaded", fetchData);
-
-
-

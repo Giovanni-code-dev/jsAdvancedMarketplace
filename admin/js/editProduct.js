@@ -1,14 +1,25 @@
+/*!
+ * GESTIONE DI UN PRODOTTO (EDITING) - SCRIPT JS
+ * Utilizza la StriveSchool API per recuperare e aggiornare i dati di un singolo prodotto
+ */
 
-
+// Variabile Bearer Key
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
-// Funzione per ottenere l'ID del prodotto dall'URL
+/*********************************************
+ * FUNZIONE: getProductIdFromUrl
+ * SCOPO: OTTENERE L'ID DEL PRODOTTO DALL'URL
+ *********************************************/
 const getProductIdFromUrl = () => {
     const params = new URLSearchParams(window.location.search);
     return params.get("id"); // Restituisce l'ID del prodotto
 };
 
-// Funzione per ottenere i dettagli del prodotto dall'API e popolare il form
+/*********************************************
+ * FUNZIONE: fetchProductById
+ * SCOPO: OTTENERE I DETTAGLI DEL PRODOTTO DALL'API 
+ *        E POPOLARE IL FORM
+ *********************************************/
 const fetchProductById = (id) => {
     fetch(`https://striveschool-api.herokuapp.com/api/product/${id}`, {
         headers: {
@@ -28,7 +39,10 @@ const fetchProductById = (id) => {
     .catch(error => console.error("Errore:", error));
 };
 
-// Funzione per popolare il form con i dati del prodotto
+/*********************************************
+ * FUNZIONE: populateForm
+ * SCOPO: POPOLARE IL FORM CON I DATI DEL PRODOTTO
+ *********************************************/
 const populateForm = (product) => {
     document.getElementById("name").value = product.name;
     document.getElementById("description").value = product.description;
@@ -37,7 +51,10 @@ const populateForm = (product) => {
     document.getElementById("price").value = product.price;
 };
 
-// Funzione per inviare i dati aggiornati del prodotto all'API  
+/*********************************************
+ * FUNZIONE: updateProduct
+ * SCOPO: INVIARE I DATI AGGIORNATI DEL PRODOTTO ALL'API
+ *********************************************/
 const updateProduct = (event) => {
     event.preventDefault(); // Evita il refresh della pagina
 
@@ -78,7 +95,11 @@ const updateProduct = (event) => {
     .catch(error => console.error("Errore:", error));
 };
 
-// Quando la pagina è caricata, recupera i dettagli del prodotto
+/*********************************************
+ * EVENT LISTENER: DOMContentLoaded
+ * SCOPO: AL CARICAMENTO DEL DOM, RECUPERARE I DETTAGLI DEL PRODOTTO
+ *        E AGGIUNGERE L'EVENTO DI SUBMIT AL FORM
+ *********************************************/
 document.addEventListener("DOMContentLoaded", () => {
     const productId = getProductIdFromUrl();
     if (productId) {
