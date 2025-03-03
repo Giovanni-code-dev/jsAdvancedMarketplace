@@ -52,11 +52,11 @@ async function fetchFrontpageData() {
 
         const data = await response.json();
 
-        // Mescoliamo i prodotti prima di restituirli
+        // mescoliamo i prodotti prima di restituirli
         return shuffleArray(data);
     } catch (error) {
         console.error("Errore:", error);
-        return []; // Ritorniamo un array vuoto in caso di errore
+        return []; // ritorniamo un array vuoto in caso di errore
     }
 }
 
@@ -70,25 +70,25 @@ function renderFrontpageProducts(arlecchino) {
         return;
     }
 
-    // Svuota il contenitore prima di renderizzare i nuovi prodotti
+    // svuota il contenitore prima di renderizzare i nuovi prodotti
     productsContainer.innerHTML = "";
 
     const elements = arlecchino.map(({ _id, name, brand, imageUrl, price }) => {
-        // Creazione della colonna Bootstrap
+        // creazione della colonna Bootstrap
         const colDiv = document.createElement("div");
         colDiv.className = "col mb-5";
 
-        // Creazione della card
+        // creazione della card
         const cardDiv = document.createElement("div");
         cardDiv.className = "card h-100";
 
-        // Immagine del prodotto
+        // immagine del prodotto
         const img = document.createElement("img");
         img.className = "card-img-top";
         img.src = imageUrl;
         img.alt = name;
         
-        // Applica un'animazione quando l'immagine viene aggiunta con gsap
+        // aspplica un'animazione quando l'immagine viene aggiunta con gsap
         img.onload = () => {
             gsap.from(img, {
                 opacity: 0,
@@ -99,33 +99,33 @@ function renderFrontpageProducts(arlecchino) {
             });
         };
 
-        // Corpo della card
+        // corpo della card
         const cardBody = document.createElement("div");
         cardBody.className = "card-body p-4";
 
-        // Testo centrato
+        // testo centrato
         const textCenter = document.createElement("div");
         textCenter.className = "text-center";
 
-        // Nome del prodotto
+        // nome del prodotto
         const title = document.createElement("h5");
         title.className = "fw-bolder";
         title.textContent = name;
 
-        // Prezzo del prodotto
+        // prezzo del prodotto
         const priceText = document.createElement("p");
         priceText.textContent = `${price} €`;
 
-        // Dettagli aggiuntivi (brand)
+        // dettagli aggiuntivi (brand)
         const brandText = document.createElement("p");
         brandText.className = "text-muted";
         brandText.textContent = brand;
 
-        // Aggiunta dei dettagli alla card
+        // aggiunta dei dettagli alla card
         textCenter.append(title, brandText, priceText);
         cardBody.appendChild(textCenter);
 
-        // Footer della card con il bottone di azione
+        // footer della card con il bottone di azione
         const cardFooter = document.createElement("div");
         cardFooter.className = "card-footer p-4 pt-0 border-top-0 bg-transparent";
         
@@ -140,14 +140,14 @@ function renderFrontpageProducts(arlecchino) {
         btnContainer.appendChild(viewButton);
         cardFooter.appendChild(btnContainer);
 
-        // Assemblaggio della card
+        // assemblaggio della card
         cardDiv.append(img, cardBody, cardFooter);
         colDiv.appendChild(cardDiv);
 
         return colDiv;
     });
 
-    // Aggiunge tutte le card al contenitore principale
+    // aggiungi tutte le card al contenitore principale
     productsContainer.append(...elements);
 }
 
@@ -163,16 +163,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       updateCartCount(); 
     }
 
-    // 2. Mostri spinner e nascondi container
+    // 2. mostra spinner e nascondi productsContainer
     const spinner = document.getElementById("loadingSpinner");
     const productsContainer = document.getElementById("productsContainer");
     spinner.style.display = "block";
     productsContainer.style.display = "none";
 
-    // 3. Fai la fetch e salvi i risultati
+    // 3. fai la fetch e salvi i risultati
     allProductsFrontpage = await fetchFrontpageData();
 
-    // 4. Renderizzi dopo un piccolo timeout
+    // 4. renderizzi dopo un piccolo timeout
     setTimeout(() => {
       renderFrontpageProducts(allProductsFrontpage);
       spinner.style.display = "none";

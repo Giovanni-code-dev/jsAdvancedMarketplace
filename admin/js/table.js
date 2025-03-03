@@ -1,14 +1,14 @@
-// Variabile globale per salvare tutti i prodotti
+// variabile globale per salvare tutti i prodotti
 let allProducts = [];
 let order = 0;
 let orderBy = "";
 
-// Selezioniamo l’input di ricerca con id="searchInput"
+// selezioniamo l’input di ricerca con id="searchInput"
 const searchInput = document.getElementById("searchInput");
 
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
-// Seleziona il tbody della tabella
+// seleziona il tbody della tabella
 const outputElement = document.getElementById("output");
 
 /*********************************************
@@ -33,13 +33,13 @@ const fetchData = () => {
         .then(data => {
             //console.log("Dati ricevuti:", data);
 
-            // Salva i dati nella variabile globale
+            // salva i dati nella variabile globale
             allProducts = data;
 
-            // Proviamo a ordinare i dati in base al nome
+            // proviamo a ordinare i dati in base al nome
             let reorderData = data.sort((a, b) => a.name.trim().localeCompare(b.name.trim()));
 
-            // Gestione ordinamento sulle colonne (cliccando sull’intestazione)
+            // gestione ordinamento sulle colonne (cliccando sull’intestazione)
             document.querySelectorAll("th").forEach(th => {
                 th.addEventListener("click", () => {
                     const sorKey = th.dataset.sort;
@@ -76,7 +76,7 @@ const fetchData = () => {
                 });
             });
 
-            // Renderizza i prodotti nella tabella iniziale
+            // renderizza i prodotti nella tabella iniziale
             renderProducts(reorderData, outputElement);
         })
         .catch(error => console.error("Errore:", error));
@@ -92,36 +92,36 @@ function renderProducts(products, outputElement) {
         return;
     }
 
-    // Svuota la tabella prima di renderizzare i nuovi dati
+    // svuota la tabella prima di renderizzare i nuovi dati
     outputElement.innerHTML = "";
 
     const elements = products.map(({ _id, name, brand, imageUrl, price }) => {
         const tr = document.createElement("tr");
         tr.dataset.id = _id;
 
-        // Colonna azioni
+        // colonna azioni
         const actionTd = document.createElement("td");
         const buttonContainer = document.createElement("div");
         buttonContainer.className = "d-flex justify-content-between align-items-center w-100 gap-2 h-100";
 
-        // Bottone Modifica
+        // bottone Modifica
         const editButton = document.createElement("button");
         editButton.className = "btn btn-secondary btn-sm d-flex justify-content-center align-items-center edit-button";
         editButton.innerHTML = '<i class="bi bi-pencil-square"></i>';
         editButton.dataset.id = _id;
 
-        // Bottone Elimina
+        // bottone Elimina
         const deleteButton = document.createElement("button");
         deleteButton.className = "btn btn-danger btn-sm d-flex justify-content-center align-items-center delete-button";
         deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
         deleteButton.dataset.id = _id;
 
-        // Aggiunge i bottoni al container e alla cella
+        // aggiunge i bottoni al container e alla cella
         buttonContainer.append(editButton, deleteButton);
         actionTd.appendChild(buttonContainer);
         tr.appendChild(actionTd);
 
-        // Creazione delle altre colonne
+        // creazione delle altre colonne
         const nameTd = document.createElement("td");
         nameTd.textContent = name;
 
@@ -144,10 +144,10 @@ function renderProducts(products, outputElement) {
         return tr;
     });
 
-    // Aggiunge tutte le righe alla tabella
+    // aggiunge tutte le righe alla tabella
     outputElement.append(...elements);
 
-    // Aggiunge gli event listener ai bottoni
+    // aggiunge gli event listener ai bottoni
     attachDeleteEventListeners();
     attachEditEventListeners();
 }
@@ -171,10 +171,10 @@ const deleteProduct = (id) => {
             }
             //console.log(`Prodotto con ID ${id} eliminato`);
 
-            // Aggiorna la variabile globale rimuovendo il prodotto eliminato
+            // aggiorna la variabile globale rimuovendo il prodotto eliminato
             allProducts = allProducts.filter(product => product._id !== id);
 
-            // Ricarica la lista aggiornata
+            // ricarica la lista aggiornata
             renderProducts(allProducts, outputElement);
         })
         .catch(error => console.error("Errore:", error));
@@ -213,23 +213,23 @@ const attachEditEventListeners = () => {
 function filterProducts() {
     const searchTerm = searchInput.value.toLowerCase();
 
-    // Se l'utente ha digitato meno di 3 caratteri, mostra tutti i prodotti
+    // se l'utente ha digitato meno di 3 caratteri, mostra tutti i prodotti
     if (searchTerm.length < 3) {
         renderProducts(allProducts, outputElement);
         return;
     }
 
-    // Filtra i prodotti controllando se il termine è presente in nome o brand
+    // filtra i prodotti controllando se il termine è presente in nome o brand
     const filtered = allProducts.filter(product =>
         product.name.toLowerCase().includes(searchTerm) ||
         product.brand.toLowerCase().includes(searchTerm)
     );
 
-    // Aggiorna la tabella con i risultati filtrati
+    // aggiorna la tabella con i risultati filtrati
     renderProducts(filtered, outputElement);
 }
 
-// Event Listener per filtrare in tempo reale
+// event Listener per filtrare in tempo reale
 searchInput.addEventListener("input", filterProducts);
 
 /*********************************************
@@ -237,3 +237,5 @@ searchInput.addEventListener("input", filterProducts);
  * SCOPO: ESEGUIRE fetchData AL CARICAMENTO DEL DOM
  *********************************************/
 document.addEventListener("DOMContentLoaded", fetchData);
+
+

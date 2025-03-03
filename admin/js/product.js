@@ -1,12 +1,8 @@
-/*!
- * GESTIONE CREAZIONE/MODIFICA PRODOTTO - SCRIPT JS
- * Utilizza la StriveSchool API per creare o modificare un prodotto
- */
 
-// Input di ricerca
+// input di ricerca
 const searchInput = document.getElementById("searchInput");
 
-// Bearer Key
+// bearer Key
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
 /*********************************************
@@ -15,7 +11,7 @@ const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZl
  *********************************************/
 const getProductIdFromUrl = () => {
     const params = new URLSearchParams(window.location.search);
-    return params.get("id"); // Restituisce l'ID se presente, altrimenti null
+    return params.get("id"); // restituisce l'ID se presente, altrimenti null
 };
 
 /*********************************************
@@ -53,7 +49,7 @@ const populateForm = (product) => {
     document.getElementById("inputAddress2").value = product.imageUrl || "";
     document.getElementById("inputCity").value = product.price || "";
 
-    // Cambia il titolo e il bottone
+    // cambia il titolo e il bottone
     document.getElementById("formTitle").textContent = "Modifica Prodotto";
     document.getElementById("submit-btn").textContent = "Salva Modifiche";
 };
@@ -63,7 +59,7 @@ const populateForm = (product) => {
  * SCOPO: INVIARE I DATI DEL FORM (CREAZIONE O MODIFICA)
  *********************************************/
 const handleFormSubmit = (event) => {
-    event.preventDefault(); // Evita il refresh della pagina
+    event.preventDefault(); // evita il refresh della pagina
 
     const productId = getProductIdFromUrl();
     const isEditing = productId !== null;
@@ -76,7 +72,7 @@ const handleFormSubmit = (event) => {
         price: document.getElementById("inputCity").value.trim()
     };
 
-    // Controlla se tutti i campi sono compilati
+    // controlla se tutti i campi sono compilati
     if (!formData.name || !formData.description || !formData.brand || !formData.imageUrl || !formData.price) {
         setTimeout(() => {
             alert("Compila tutti i campi prima di creare/modificare un prodotto!");
@@ -84,7 +80,7 @@ const handleFormSubmit = (event) => {
         return;
     }
 
-    // Assicura che il prezzo sia un numero
+    // assicura che il prezzo sia un numero
     formData.price = parseFloat(formData.price);
     if (isNaN(formData.price)) {
         setTimeout(() => {
@@ -99,7 +95,7 @@ const handleFormSubmit = (event) => {
     myHeaders.append("Authorization", Bearer);
     myHeaders.append("Content-Type", "application/json");
 
-    // Se isEditing è vero, aggiorna un prodotto esistente, altrimenti crea un nuovo prodotto
+    // se isEditing è vero, aggiorna un prodotto esistente, altrimenti crea un nuovo prodotto
     const endpoint = isEditing 
         ? `https://striveschool-api.herokuapp.com/api/product/${productId}` 
         : "https://striveschool-api.herokuapp.com/api/product/";
@@ -133,10 +129,10 @@ const handleFormSubmit = (event) => {
 document.addEventListener("DOMContentLoaded", () => {
     const productId = getProductIdFromUrl();
     if (productId) {
-        // Se c'è un ID, carica i dati per modificarli
+        // se c'è un ID, carica i dati per modificarli
         fetchProductById(productId);
     }
 
-    // Aggiunge l'evento submit al form
+    // aggiunge l'evento submit al form
     document.getElementById("productForm").addEventListener("submit", handleFormSubmit);
 });

@@ -1,9 +1,5 @@
-/*!
- * GESTIONE DI UN PRODOTTO (EDITING) - SCRIPT JS
- * Utilizza la StriveSchool API per recuperare e aggiornare i dati di un singolo prodotto
- */
 
-// Variabile Bearer Key
+// variabile Bearer Key
 const Bearer = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2JjZGZlZmU3MDMzNzAwMTUzMTZkZDciLCJpYXQiOjE3NDA0MzEzNDMsImV4cCI6MTc0MTY0MDk0M30.QIyekhCPalK1m0FoSXHF1V-w-UXkY8UItLTZO1O5APs";
 
 /*********************************************
@@ -64,7 +60,7 @@ const updateProduct = (event) => {
         return;
     }
 
-    // Creazione dell'oggetto con i dati aggiornati
+    // creazione dell'oggetto con i dati aggiornati
     const updatedProduct = {
         name: document.getElementById("name").value,
         description: document.getElementById("description").value,
@@ -108,6 +104,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Nessun ID prodotto trovato nell'URL.");
     }
 
-    // Aggiunge l'evento submit al form
+    // aggiunge l'evento submit al form
     document.getElementById("editProductForm").addEventListener("submit", updateProduct);
 });
