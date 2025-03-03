@@ -40,6 +40,7 @@ const fetchData = () => {
             let reorderData = data.sort((a, b) => a.name.trim().localeCompare(b.name.trim()));
 
             // gestione ordinamento sulle colonne (cliccando sull’intestazione)
+            // (questa parte l'ho sviluppata una sera insieme ad Ivan.dato che siamo partiti dallo stesso framework ci siamo divertiti giocare un pò con le funzioni)
             document.querySelectorAll("th").forEach(th => {
                 th.addEventListener("click", () => {
                     const sorKey = th.dataset.sort;
@@ -234,8 +235,28 @@ searchInput.addEventListener("input", filterProducts);
 
 /*********************************************
  * EVENT LISTENER: DOMContentLoaded
- * SCOPO: ESEGUIRE fetchData AL CARICAMENTO DEL DOM
+ * SCOPO: MOSTRARE LO SPINNER ALL'AVVIO E,
+ *        DOPO LA FETCH, NASCONDERLO E MOSTRARE LA TABELLA
  *********************************************/
-document.addEventListener("DOMContentLoaded", fetchData);
+document.addEventListener("DOMContentLoaded", () => {
+    const spinner = document.getElementById("loadingSpinner");
+    const tableContainer = document.getElementById("tableContainer"); 
+    // Assicurati di avere un contenitore (DIV) con id="tableContainer"
+    // che racchiuda la tua tabella o l'intera sezione dei prodotti.
+
+    // 1. Mostra spinner e nascondi la tabella
+    if (spinner) spinner.style.display = "block";
+    if (tableContainer) tableContainer.style.display = "none";
+
+    // 2. Avvia il fetch dei dati
+    // (Assicurati che fetchData restituisca una Promise, se vuoi usare then/async)
+    fetchData();
+
+    // 3. Aspetta un piccolo timeout prima di nascondere lo spinner e mostrare la tabella
+    setTimeout(() => {
+        if (spinner) spinner.style.display = "none";
+        if (tableContainer) tableContainer.style.display = "block";
+    }, 500);
+});
 
 
