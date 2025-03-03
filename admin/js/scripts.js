@@ -81,7 +81,8 @@ function renderFrontpageProducts(arlecchino) {
             gsap.from(img, {
                 opacity: 0,
                 scale: 0.8,
-                duration: 1,
+                y: 50, 
+                duration: 1.5,
                 ease: "power2.out"
             });
         };
@@ -121,7 +122,7 @@ function renderFrontpageProducts(arlecchino) {
 
         const viewButton = document.createElement("a");
         viewButton.className = "btn btn-outline-dark mt-auto";
-        viewButton.href = `detailProduct.html?id=${_id}`; // Link alla pagina dettagli del prodotto
+        viewButton.href = `/admin/detailProduct.html?id=${_id}`; // Link alla pagina dettagli del prodotto
         viewButton.textContent = "Visualizza";
 
         btnContainer.appendChild(viewButton);
